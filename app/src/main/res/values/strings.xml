@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HttpServerAngel</string>
+    <string name="tiny_http_server">Tiny http Server</string>
+    <string name="write_a_message">Write a message</string>
+
+    <string-array name="credits">
+        <item>&lt;H1&gt;Tiny Http Server&lt;/H1&gt;</item>
+        <item>&lt;P&gt;The IP address shown in this app is the IP Address of a basic Http server. Type it in a browser and retrieve the content on the box.&lt;/P&gt;</item>
+        <item>&lt;H2&gt;Example taken from:&lt;/H2&gt;</item>
+        <item>&lt;P&gt;&lt;a href="http://android-er.blogspot.com/"&gt;BlogSpot&lt;/a&gt;&lt;/P&gt;</item>
+        <item>&lt;P&gt;&lt;a href="http://android-er.blogspot.com/2014/08/implement-simple-http-server-running-on.html"&gt;Implement a simple http server&lt;/a&gt;&lt;/P&gt;</item>
+        <item>&lt;P&gt;found in StackOverflow&lt;/P&gt;</item>
+        <item>&lt;P&gt;&lt;a href="https://stackoverflow.com/questions/6329468/how-to-create-a-http-server-in-android"&gt;How to create a http server in Android&lt;/a&gt;&lt;/P&gt;</item>
+    </string-array>
+</resources>
