@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
@@ -139,17 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 uriPrevious = null;
                 uri = resultData.getData();
                 infoIp.setText(getIpInfo());
-
-                // test the file!
-                File external = android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                Log.d("LUIS", external.toString());
-                if(external.isDirectory()) {
-                    for (File file : external.listFiles()) {
-                        Log.d("LUIS", file.getName());
-                    }
-                }
-                Log.d("LUIS", "count of files:" + external.length());
-                Log.d("LUIS", external.getAbsolutePath());
             }
         }
     }
@@ -213,16 +204,70 @@ public class MainActivity extends AppCompatActivity {
     private class HttpResponseThread extends Thread {
         Socket socket;
         String message;
+        Uri uri;
+
         HttpResponseThread(Socket socket, String message){
             this.socket = socket;
             this.message = message;
+            uri = null;
         }
 
         HttpResponseThread(Socket socket, Uri uri) {
             this.socket = socket;
+            this.uri = uri;
+            message = null;
+        }
+
+        @Override
+        public void run() {
+            BufferedReader is;
+            String request;
             try {
-                ParcelFileDescriptor descriptor =
-                        getContentResolver().openFileDescriptor(uri, "r");
+                is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                request = is.readLine();
+
+                if(message != null) {
+                    dumpResponse(message, socket);
+                } else {
+                    dumpResponse(uri, socket);
+                }
+                socket.close();
+
+                msgLog += "Request of " + request
+                        + " from " + socket.getInetAddress().toString() + "\n";
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        infoMsg.setText(msgLog);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void dumpResponse(String message, Socket socket) {
+            try {
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                String response = "<html><head></head>" +
+                        "<body>" +
+                        "<h1>" + message + "</h1>" +
+                        "</body></html>";
+
+                writer.print("HTTP/1.0 200" + "\r\n");
+                writer.print("Content type: text/html" + "\r\n");
+                writer.print("Content length: " + response.length() + "\r\n");
+                writer.print("\r\n");
+                writer.print(response + "\r\n");
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void dumpResponse(Uri uri, Socket socket) {
+            try {
+                ParcelFileDescriptor descriptor = getContentResolver().openFileDescriptor(uri, "r");
                 FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
                 FileInputStream stream = new FileInputStream(fileDescriptor);
 
@@ -230,62 +275,27 @@ public class MainActivity extends AppCompatActivity {
                 int total = 0;
                 int available = stream.available();
                 while(available > 0) {
-                    Log.d("LUIS", "available = " + available);
                     byte[] readBytes = new byte[available];
-                    stream.read(readBytes);
+                    int n = stream.read(readBytes);
                     listByteArray.add(readBytes);
-                    total += readBytes.length;
+                    total += n;
                     available = stream.available();
                 }
 
-                // TODO: HOW TO "PRINT" TO THE HTTP BODY IN THE RESPONSE... ASK DR. OCTOPUS... MAYBE DIRECTLY WITH THE FILE INPUT STREAM
-
-                RandomAccessFile file = new RandomAccessFile(uri.getPath(), "r");
-                byte[] fileBytes = new byte[(int) file.length()];
-                file.readFully(fileBytes);
-                this.message = new String(fileBytes);
-            } catch (IOException e) {
-                this.message = null;
-            }
-        }
-
-        @Override
-        public void run() {
-            BufferedReader is;
-            PrintWriter os;
-            String request;
-            try {
-                is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                request = is.readLine();
-
-                os = new PrintWriter(socket.getOutputStream(), true);
-
-                String response =
-                        "<html><head></head>" +
-                                "<body>" +
-                                "<h1>" + message + "</h1>" +
-                                "</body></html>";
-
-                os.print("HTTP/1.0 200" + "\r\n");
-                os.print("Content type: text/html" + "\r\n");
-                os.print("Content length: " + response.length() + "\r\n");
-                os.print("\r\n");
-                os.print(response + "\r\n");
+                OutputStream os = socket.getOutputStream();
+                String s = "HTTP/1.0 200" + "\r\n" +
+                        "Content type: image/jpeg" + "\r\n" +
+                        "Content length: " + total + "\r\n";
+                os.write(s.getBytes());
+                for(byte[] bytes : listByteArray) {
+                    os.write(bytes);
+                }
+                os.write('\r');
+                os.write('\n');
                 os.flush();
-                socket.close();
 
-                msgLog += "Request of " + request
-                        + " from " + socket.getInetAddress().toString() + "\n";
-                MainActivity.this.runOnUiThread(new Runnable() {
+            } catch ( NullPointerException | IOException e) {
 
-                    @Override
-                    public void run() {
-                        infoMsg.setText(msgLog);
-                    }
-                });
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
