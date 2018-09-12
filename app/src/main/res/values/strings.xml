@@ -3,6 +3,8 @@
     <string name="tiny_http_server">Tiny http Server</string>
     <string name="write_a_message">Write a message</string>
 
+    <string name="btn_pick_file">Pick a file</string>
+    <string name="btn_write_message">Write a message</string>
     <string-array name="credits">
         <item>&lt;H1&gt;Tiny Http Server&lt;/H1&gt;</item>
         <item>&lt;P&gt;The IP address shown in this app is the IP Address of a basic Http server. Type it in a browser and retrieve the content on the box.&lt;/P&gt;</item>

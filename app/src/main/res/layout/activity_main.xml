@@ -8,36 +8,57 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Switch
+        android:id="@+id/choose_function"
+        android:onClick="onClickChooseFunction"
+        android:text="@string/btn_pick_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/btn_credits"
+        android:onClick="onClickBtnCredits"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_info"
+        android:background="@android:color/transparent"
+        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintTop_toBottomOf="@id/choose_function"
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/welcome_layout"
+        android:visibility="visible"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/write_a_message"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/choose_function"
+        app:layout_constraintBottom_toBottomOf="@id/btn_credits"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/btn_credits"
         >
         <EditText
-            android:id="@+id/welcomemsg"
+            android:id="@+id/message_text"
             android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
     </android.support.design.widget.TextInputLayout>
 
-    <ImageButton
-        android:id="@+id/btn_credits"
-        android:onClick="onClickBtnCredits"
+    <Button
+        android:id="@+id/btn_pick_file"
+        android:text = "@string/btn_pick_file"
+        android:onClick="onClickBtnPickFile"
+        android:visibility="gone"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/ic_info"
-        android:background="@android:color/transparent"
-        app:layout_constraintWidth_percent="0.15"
-        app:layout_constraintTop_toTopOf="@id/welcome_layout"
-        app:layout_constraintBottom_toBottomOf="@id/welcome_layout"
-        app:layout_constraintLeft_toRightOf="@id/welcome_layout"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/choose_function"
+        app:layout_constraintBottom_toBottomOf="@id/btn_credits"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_credits"/>
 
     <TextView
         android:id="@+id/infoip"
@@ -45,7 +66,7 @@
         android:textSize="20sp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/welcome_layout"
+        app:layout_constraintTop_toBottomOf="@id/btn_credits"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         />
