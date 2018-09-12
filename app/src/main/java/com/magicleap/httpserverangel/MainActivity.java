@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -33,6 +36,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.util.Enumeration;
+import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -217,6 +221,25 @@ public class MainActivity extends AppCompatActivity {
         HttpResponseThread(Socket socket, Uri uri) {
             this.socket = socket;
             try {
+                ParcelFileDescriptor descriptor =
+                        getContentResolver().openFileDescriptor(uri, "r");
+                FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
+                FileInputStream stream = new FileInputStream(fileDescriptor);
+
+                LinkedList<byte[]> listByteArray = new LinkedList<>();
+                int total = 0;
+                int available = stream.available();
+                while(available > 0) {
+                    Log.d("LUIS", "available = " + available);
+                    byte[] readBytes = new byte[available];
+                    stream.read(readBytes);
+                    listByteArray.add(readBytes);
+                    total += readBytes.length;
+                    available = stream.available();
+                }
+
+                // TODO: HOW TO "PRINT" TO THE HTTP BODY IN THE RESPONSE... ASK DR. OCTOPUS... MAYBE DIRECTLY WITH THE FILE INPUT STREAM
+
                 RandomAccessFile file = new RandomAccessFile(uri.getPath(), "r");
                 byte[] fileBytes = new byte[(int) file.length()];
                 file.readFully(fileBytes);
