@@ -2,41 +2,30 @@ package com.magicleap.httpserverangel;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.LinkedList;
 
@@ -285,7 +274,8 @@ public class MainActivity extends AppCompatActivity {
                 OutputStream os = socket.getOutputStream();
                 String s = "HTTP/1.0 200" + "\r\n" +
                         "Content type: image/jpeg" + "\r\n" +
-                        "Content length: " + total + "\r\n";
+                        "Content length: " + total + "\r\n" +
+                        "\r\n";
                 os.write(s.getBytes());
                 for(byte[] bytes : listByteArray) {
                     os.write(bytes);
